@@ -3,16 +3,20 @@
   "package": "org.quiltmc.qsl.recipe.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "CookingRecipeSerializerMixin",
-    "CuttingRecipeSerializerMixin",
-    "RecipeManagerMixin",
-    "ShapedRecipeSerializerMixin",
-    "ShapelessRecipeSerializerMixin",
-    "SmithingRecipeAccessor",
-    "SmithingRecipeSerializerMixin",
-    "SpecialRecipeSerializerMixin"
+	"BrewingRecipeRegistryMixin",
+	"BrewingStandBlockEntityMixin",
+	"CookingRecipeSerializerMixin",
+	"CuttingRecipeSerializerMixin",
+	"PotionSlotMixin",
+	"RecipeManagerMixin",
+	"ShapedRecipeSerializerMixin",
+	"ShapelessRecipeSerializerMixin",
+	"SmithingRecipeAccessor",
+	"SmithingRecipeSerializerMixin",
+	"SpecialRecipeSerializerMixin",
+	"SynchronizeRecipesS2CPacketMixin"
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }

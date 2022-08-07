@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.item.Items;
 import org.jetbrains.annotations.ApiStatus;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
@@ -45,6 +46,8 @@ public class ItemContentRegistriesInitializer implements ModInitializer {
 
 	public static final Map<ItemConvertible, Float> INITIAL_COMPOST_CHANCE = ImmutableMap.copyOf(ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE);
 
+	public static final Map<Item, Integer> BREWING_FUEL_MAP = new Reference2ObjectOpenHashMap<>();
+
 	private static boolean collectInitialTags = false;
 
 	@Override
@@ -56,17 +59,24 @@ public class ItemContentRegistriesInitializer implements ModInitializer {
 
 		INITIAL_COMPOST_CHANCE.forEach((item, f) -> ItemContentRegistries.COMPOST_CHANCE.put(item.asItem(), f));
 
+		ItemContentRegistries.BREWING_FUEL_TIME.put(Items.BLAZE_POWDER, 20);
+		ItemContentRegistries.BREWING_FUEL_TIME.put(Items.DIAMOND, 100);
+		ItemContentRegistries.BREWING_FUEL_TIME.put(Items.NETHERITE_INGOT, 500);
+
 		ResourceLoaderEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, error) -> {
 			FUEL_MAP.clear();
 			setMapFromAttachment(FUEL_MAP::put, ItemContentRegistries.FUEL_TIME);
 
 			ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.clear();
 			setMapFromAttachment(ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE::put, ItemContentRegistries.COMPOST_CHANCE);
+
+			BREWING_FUEL_MAP.clear();
+			setMapFromAttachment(BREWING_FUEL_MAP::put, ItemContentRegistries.BREWING_FUEL_TIME);
 		});
 	}
 
 	private static <T, V> void setMapFromAttachment(BiFunction<T, V, ?> map, RegistryEntryAttachment<T, V> attachment) {
-		attachment.registry().stream().forEach(entry -> attachment.get(entry).ifPresent(v -> map.apply(entry, v)));
+		attachment.forEach(entry -> map.apply(entry.entry(), entry.value()));
 	}
 
 	public static boolean shouldCollectInitialTags() {

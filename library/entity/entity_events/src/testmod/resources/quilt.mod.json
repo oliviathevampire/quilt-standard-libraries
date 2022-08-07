@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "org.quiltmc.qsl.entity.entity_events",
+    "id": "quilt_entity_events_testmod",
+    "version": "1.0.0",
+    "metadata": {
+      "name": "Quilt Entity Multipart API Test Mod",
+      "license": "Apache-2.0"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "load_type": "always",
+    "entrypoints": {
+      "events": [
+        "org.quiltmc.qsl.entity_events.test.EntityEventsTestMod"
+      ],
+      "client_events": [
+        "org.quiltmc.qsl.entity_events.test.client.EntityEventsTestModClient"
+      ]
+    },
+    "depends": [
+      "quilt_loader",
+      "quilt_entity_events"
+    ]
+  }
+}

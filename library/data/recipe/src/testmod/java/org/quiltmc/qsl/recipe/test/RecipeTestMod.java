@@ -21,20 +21,27 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.potion.Potions;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 
+import net.minecraft.util.registry.Registry;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.recipe.api.RecipeManagerHelper;
+import org.quiltmc.qsl.recipe.api.builder.QuiltRecipeBuilders;
 import org.quiltmc.qsl.recipe.api.builder.VanillaRecipeBuilders;
 
 public class RecipeTestMod implements ModInitializer {
+	public static final RecipeSerializer<SwordImbuingTestRecipe> TEST_SERIALIZER = new SwordImbuingTestRecipe.SwordImbuingTestSerializer(SwordImbuingTestRecipe::new);
 	public static final String NAMESPACE = "quilt_recipe_testmod";
 	private static final Random RANDOM = new Random();
 	private static final List<Item> RANDOM_ITEMS_POOL = Arrays.asList(
@@ -47,22 +54,50 @@ public class RecipeTestMod implements ModInitializer {
 
 	@Override
 	public void onInitialize(ModContainer mod) {
+		Registry.register(Registry.RECIPE_SERIALIZER, new Identifier(NAMESPACE, "sword_imbuing"), TEST_SERIALIZER);
+
 		// Recipe with stick -> diamond
 		RecipeManagerHelper.registerStaticRecipe(
 				VanillaRecipeBuilders.shapelessRecipe(new ItemStack(Items.DIAMOND))
 						.ingredient(Items.STICK)
-						.build(new Identifier(NAMESPACE, "test1"), ""));
+						.build(new Identifier(NAMESPACE, "test1"), "")
+		);
 
-		RecipeManagerHelper.addRecipes(handler -> {
-			handler.register(new Identifier(NAMESPACE, "test2"),
-					id -> VanillaRecipeBuilders.shapedRecipe("IG", "C#")
-							.ingredient('I', Items.IRON_INGOT)
-							.ingredient('G', Items.GOLD_INGOT)
-							.ingredient('C', Items.COAL)
-							.ingredient('#', Items.CHARCOAL)
-							.output(pickRandomStack())
-							.build(id, ""));
-		});
+		// Recipe with lingering potion -> splash potion
+		RecipeManagerHelper.registerStaticRecipe(
+				QuiltRecipeBuilders.potionItemRecipe(Items.LINGERING_POTION, Items.SPLASH_POTION)
+						.fuel(2)
+						.brewTime(40)
+						.ingredient(Items.SPONGE)
+						.build(new Identifier(NAMESPACE, "brew_item_test"), "")
+		);
+
+		// Recipe with water potion -> awkward potion
+		RecipeManagerHelper.registerStaticRecipe(
+				QuiltRecipeBuilders.potionRecipe(Potions.WATER, Potions.AWKWARD)
+						.brewTime(10)
+						.ingredient(Items.SOUL_SAND)
+						.build(new Identifier(NAMESPACE, "brew_potion_test"), "")
+		);
+
+		// Recipe with water potion -> strength potion with added instant healing
+		RecipeManagerHelper.registerStaticRecipe(
+				QuiltRecipeBuilders.customPotionRecipe(Potions.WATER, Potions.STRENGTH)
+						.brewTime(20)
+						.ingredient(Items.EGG)
+						.effects(new StatusEffectInstance(StatusEffects.INSTANT_HEALTH))
+						.build(new Identifier(NAMESPACE, "brew_custom_potion_test"), "")
+		);
+
+		RecipeManagerHelper.addRecipes(handler -> handler.register(new Identifier(NAMESPACE, "test2"),
+				id -> VanillaRecipeBuilders.shapedRecipe("IG", "C#")
+						.ingredient('I', Items.IRON_INGOT)
+						.ingredient('G', Items.GOLD_INGOT)
+						.ingredient('C', Items.COAL)
+						.ingredient('#', Items.CHARCOAL)
+						.output(pickRandomStack())
+						.build(id, "")
+		));
 
 		RecipeManagerHelper.modifyRecipes(handler -> {
 			handler.replace(VanillaRecipeBuilders.shapelessRecipe(new ItemStack(Items.NETHER_STAR))
@@ -75,12 +110,10 @@ public class RecipeTestMod implements ModInitializer {
 					.build(new Identifier("oak_button"), ""));
 		});
 
-		RecipeManagerHelper.removeRecipes(handler -> {
-			handler.removeIf(RecipeType.CRAFTING, craftingRecipe -> {
-				return craftingRecipe.getOutput().getItem() instanceof BlockItem blockItem
-						&& blockItem.getBlock() instanceof PressurePlateBlock;
-			});
-		});
+		RecipeManagerHelper.removeRecipes(handler -> handler.removeIf(RecipeType.CRAFTING, craftingRecipe ->
+				craftingRecipe.getOutput().getItem() instanceof BlockItem blockItem
+						&& blockItem.getBlock() instanceof PressurePlateBlock
+		));
 	}
 
 	private static ItemStack pickRandomStack() {

@@ -1,0 +1,16 @@
+plugins {
+	id("qsl.module")
+}
+
+qslModule {
+	name = "Quilt Enchantment API"
+	moduleName = "enchantment"
+	id = "quilt_enchantment"
+	description = "Adds an api for adding new types of enchantments"
+	library = "content_other"
+	moduleDependencies {
+		core {
+			api("qsl_base")
+		}
+	}
+}
