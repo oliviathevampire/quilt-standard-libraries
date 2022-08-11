@@ -128,5 +128,4 @@ public class BlockContentRegistries {
 					Integer.class,
 					Codec.intRange(1, 15))
 			.build();
-
 }

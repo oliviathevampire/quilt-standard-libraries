@@ -16,14 +16,13 @@
 
 package org.quiltmc.qsl.block.content.registry.impl;
 
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.*;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.HoneycombItem;
-import net.minecraft.item.ShovelItem;
-import net.minecraft.world.event.GameEvent;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.block.content.registry.api.BlockContentRegistries;
@@ -32,9 +31,16 @@ import org.quiltmc.qsl.block.content.registry.api.ReversibleBlockEntry;
 import org.quiltmc.qsl.registry.attachment.api.RegistryEntryAttachment;
 import org.quiltmc.qsl.resource.loader.api.ResourceLoaderEvents;
 
-import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FireBlock;
+import net.minecraft.block.Oxidizable;
+import net.minecraft.block.SculkSensorBlock;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.HoneycombItem;
+import net.minecraft.item.ShovelItem;
+import net.minecraft.world.event.GameEvent;
 
 public class BlockContentRegistriesInitializer implements ModInitializer {
 	private static final Map<Block, BlockState> INITIAL_PATH_STATES = ImmutableMap.copyOf(ShovelItem.PATH_STATES);
@@ -82,6 +88,7 @@ public class BlockContentRegistriesInitializer implements ModInitializer {
 		ResourceLoaderEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, error) -> resetMaps());
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void resetMaps() {
 		ShovelItem.PATH_STATES.clear();
 		setMapFromAttachment(ShovelItem.PATH_STATES::put, BlockContentRegistries.FLATTENABLE_BLOCK);
@@ -118,4 +125,5 @@ public class BlockContentRegistriesInitializer implements ModInitializer {
 	private static <T, V> void addMapToAttachment(Map<T, V> map, RegistryEntryAttachment<T, V> attachment) {
 		map.forEach(attachment::put);
 	}
+
 }

@@ -16,10 +16,9 @@
 
 package org.quiltmc.qsl.block.content.registry.mixin;
 
+import java.util.Map;
+
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.AxeItem;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -28,7 +27,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.ShovelItem;
 
 @Mixin(AxeItem.class)
 public class AxeItemMixin {
@@ -39,4 +41,5 @@ public class AxeItemMixin {
 	private static void makeMapMutable(CallbackInfo ci) {
 		STRIPPED_BLOCKS = new Reference2ObjectOpenHashMap<>(STRIPPED_BLOCKS);
 	}
+
 }

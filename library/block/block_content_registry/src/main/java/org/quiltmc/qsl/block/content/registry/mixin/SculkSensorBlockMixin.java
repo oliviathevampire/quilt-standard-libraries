@@ -38,4 +38,5 @@ public class SculkSensorBlockMixin {
     private static void changeMap(CallbackInfo ci) {
         EVENTS = new Object2IntOpenHashMap<>(EVENTS);
     }
+
 }

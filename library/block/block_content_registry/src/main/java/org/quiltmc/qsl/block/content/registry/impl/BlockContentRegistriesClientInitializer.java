@@ -16,8 +16,6 @@
 
 package org.quiltmc.qsl.block.content.registry.impl;
 
-import net.minecraft.block.Block;
-import net.minecraft.text.Text;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
@@ -25,6 +23,10 @@ import org.quiltmc.qsl.block.content.registry.api.BlockContentRegistries;
 import org.quiltmc.qsl.tooltip.api.client.ItemTooltipCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.text.Text;
 
 
 public class BlockContentRegistriesClientInitializer implements ClientModInitializer {
@@ -50,4 +52,5 @@ public class BlockContentRegistriesClientInitializer implements ClientModInitial
             }
         }
     }
+    
 }

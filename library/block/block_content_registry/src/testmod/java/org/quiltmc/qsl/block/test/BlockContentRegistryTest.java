@@ -55,7 +55,7 @@ public class BlockContentRegistryTest implements ModInitializer {
 				new OxidizableBlock(Oxidizable.OxidizationLevel.UNAFFECTED, AbstractBlock.Settings.copy(Blocks.IRON_BLOCK)),
 				BlockContentRegistries.OXIDIZABLE_BLOCK, new ReversibleBlockEntry(Blocks.IRON_BLOCK, false));
 
-		/*ServerWorldTickEvents.START.register((server, world) -> {
+		ServerWorldTickEvents.START.register((server, world) -> {
 			if (testPassed) {
 				return;
 			}
@@ -69,7 +69,7 @@ public class BlockContentRegistryTest implements ModInitializer {
 			LOGGER.info("Finished BlockContentRegistry tests");
 
 			testPassed = true;
-		});*/
+		});
 	}
 
 	private <T> void  assertValues(Block block, RegistryEntryAttachment<Block, T> attachment, T value) {
@@ -84,4 +84,5 @@ public class BlockContentRegistryTest implements ModInitializer {
 
 		LOGGER.info("Test for block " + id + " passed for REA " + attachment.id());
 	}
+
 }
