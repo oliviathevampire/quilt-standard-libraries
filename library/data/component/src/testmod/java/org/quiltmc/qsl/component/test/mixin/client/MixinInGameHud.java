@@ -40,6 +40,9 @@ public abstract class MixinInGameHud {
 	@Shadow
 	@Final
 	private ItemRenderer itemRenderer;
+	@Shadow
+	@Final
+	private MinecraftClient client;
 
 	@Shadow
 	public abstract TextRenderer getTextRenderer();
@@ -47,39 +50,41 @@ public abstract class MixinInGameHud {
 	@SuppressWarnings("ConstantConditions")
 	@Inject(method = "render", at = @At("TAIL"))
 	private void renderCustom(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
-		MinecraftClient.getInstance().world
-				.expose(ComponentTestMod.SAVE_FLOAT)
-				.map(SaveFloatSerializable::get)
-				.map(String::valueOf)
-				.ifJust(saveFloat -> this.getTextRenderer().draw(matrices, saveFloat, 10, 20, 0xfafafa));
+		this.client.world.ifPresent(ComponentTestMod.SAVE_FLOAT, saveFloatSerializable ->
+			this.getTextRenderer().draw(
+				matrices,
+				String.valueOf(saveFloatSerializable.get()),
+				10, 10,
+				0xfafafa
+			)
+		);
 
-		Entity entity = MinecraftClient.getInstance().targetedEntity;
+		Entity entity = this.client.targetedEntity;
 		if (entity != null) {
-			entity.expose(ComponentTestMod.HOSTILE_EXPLODE_TIME)
-				  .map(DefaultIntegerSerializable::get)
-				  .ifJust(integer -> this.getTextRenderer().draw(matrices, integer.toString(), 10, 10, 0xfafafa));
+			entity.ifPresent(
+				ComponentTestMod.HOSTILE_EXPLODE_TIME,
+				defaultIntegerSerializable -> this.getTextRenderer().draw(
+					matrices,
+					String.valueOf(defaultIntegerSerializable.get()),
+					10, 10,
+					0xfafafa
+				)
+			);
 		}
 
-		ChunkPos chunkPos = MinecraftClient.getInstance().player.getChunkPos();
-		MinecraftClient.getInstance().world.getChunk(chunkPos.x, chunkPos.z).expose(ComponentTestMod.CHUNK_INVENTORY)
-										   .map(defaultInventoryComponent -> defaultInventoryComponent.getStack(0))
-										   .ifJust(itemStack -> this.itemRenderer.renderInGui(itemStack, 10, 10));
+		ChunkPos chunkPos = this.client.player.getChunkPos();
+		this.client.world.getChunk(chunkPos.x, chunkPos.z)
+			.ifPresent(ComponentTestMod.CHUNK_INVENTORY, chunkInventorySerializable -> {
+				var stack = chunkInventorySerializable.getStack(0);
+				this.itemRenderer.renderInGui(stack, 10, 20);
+			});
 
-		MinecraftClient.getInstance().player.expose(ComponentTestMod.UUID_THING).ifJust(uuidField -> {
+		this.client.player.ifPresent(ComponentTestMod.UUID_THING, uuidField -> {
 			if (uuidField.getValue() == null) {
 				return;
 			}
 			var uuidString = uuidField.getValue().toString();
-			MinecraftClient.getInstance().textRenderer.draw(matrices, uuidString, 10, 30, 0xFAFAFA);
+			this.client.textRenderer.draw(matrices, uuidString, 10, 30, 0xFAFAFA);
 		});
-
-		// Vec3d pos = MinecraftClient.getInstance().crosshairTarget.getPos();
-		// BlockPos lookAt = new BlockPos(pos);
-		// BlockEntity blockEntity = MinecraftClient.getInstance().world.getBlockEntity(lookAt);
-//		if (blockEntity != null) {
-//			blockEntity.expose(ComponentTestMod.CHEST_NUMBER)
-//					   .ifJust(defaultIntegerSerializable -> System.out.println(defaultIntegerSerializable.getValue
-//					   ()));
-//		}
 	}
 }

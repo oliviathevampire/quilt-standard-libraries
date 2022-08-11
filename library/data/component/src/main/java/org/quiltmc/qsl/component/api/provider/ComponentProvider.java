@@ -23,11 +23,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.base.api.util.InjectedInterface;
-import org.quiltmc.qsl.base.api.util.Maybe;
 import org.quiltmc.qsl.component.api.ComponentType;
 import org.quiltmc.qsl.component.api.Components;
 import org.quiltmc.qsl.component.api.container.ComponentContainer;
+
+import java.util.function.Consumer;
 
 /**
  * Any object that wishes to allow components to be attached to and queried from it,
@@ -84,9 +86,20 @@ public interface ComponentProvider {
 	 *
 	 * @param type The {@linkplain ComponentType type} we want to query.
 	 * @param <C>  The type of the held component.
-	 * @return A {@link Maybe} instance following the rules defined in {@link Components#expose(ComponentType, Object)}.
+	 * @return A {@link Nullable} object following the rules defined in {@link Components#expose(ComponentType, Object)}.
 	 */
-	default <C> Maybe<C> expose(ComponentType<C> type) {
+	@Nullable
+	default <C> C expose(ComponentType<C> type) {
 		return this.getComponentContainer().expose(type);
+	}
+
+	@Nullable
+	default <C> C ifPresent(ComponentType<C> type, Consumer<? super C> action) {
+		C component = this.expose(type);
+		if (component != null) {
+			action.accept(component);
+		}
+
+		return component;
 	}
 }

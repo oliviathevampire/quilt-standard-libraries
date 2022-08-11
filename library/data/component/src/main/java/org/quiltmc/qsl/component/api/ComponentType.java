@@ -108,11 +108,11 @@ public record ComponentType<T>(Identifier id, ComponentFactory<T> defaultFactory
 		public <C> C getOrCreate(ComponentType<C> type, ComponentCreationContext operations) {
 			if (this.staticInstances.containsKey(type)) {
 				return (C) this.staticInstances.get(type);
-			} else {
-				C singleton = type.defaultFactory.create(operations);
-				this.staticInstances.put(type, singleton);
-				return singleton;
 			}
+
+			C singleton = type.defaultFactory.create(operations);
+			this.staticInstances.put(type, singleton);
+			return singleton;
 		}
 	}
 }

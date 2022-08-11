@@ -36,7 +36,7 @@ public abstract class SolidColorCooldownOverlayRenderer implements CooldownOverl
 	public static final int MAX_STEP = 16;
 
 	@Override
-	public void renderCooldownOverlay(MatrixStack matrices, TextRenderer renderer, float zOffset, ItemStack stack) {
+	public void renderCooldownOverlay(MatrixStack matrices, QuadBatchManager quadBatchManager, TextRenderer textRenderer, float zOffset, ItemStack stack) {
 		if (!isCooldownOverlayVisible(stack)) {
 			return;
 		}
@@ -44,15 +44,8 @@ public abstract class SolidColorCooldownOverlayRenderer implements CooldownOverl
 		int step = getCooldownOverlayStep(stack);
 		int color = getCooldownOverlayColor(stack);
 
-		RenderSystem.disableDepthTest();
-		RenderSystem.disableTexture();
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder buffer = tessellator.getBufferBuilder();
-		GuiRendererHelper.renderQuad(matrices, buffer, 0, 16 - step, 16, step, color);
-		RenderSystem.enableTexture();
-		RenderSystem.enableDepthTest();
+		var buffer = quadBatchManager.beginQuads();
+		QuadBuilder.add(matrices, buffer, 0, 16 - step, 16, step, color);
 	}
 
 	/**

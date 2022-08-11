@@ -17,6 +17,8 @@
 package org.quiltmc.qsl.recipe.mixin;
 
 import com.google.gson.JsonObject;
+import net.minecraft.block.AnvilBlock;
+import net.minecraft.screen.AnvilScreenHandler;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.data.server.recipe.SmithingRecipeJsonFactory;

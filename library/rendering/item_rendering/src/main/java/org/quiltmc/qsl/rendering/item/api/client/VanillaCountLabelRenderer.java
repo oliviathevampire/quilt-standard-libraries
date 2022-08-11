@@ -16,7 +16,6 @@
 
 package org.quiltmc.qsl.rendering.item.api.client;
 
-import com.mojang.blaze3d.vertex.Tessellator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +32,7 @@ import net.minecraft.item.ItemStack;
 @Environment(EnvType.CLIENT)
 public class VanillaCountLabelRenderer implements CountLabelRenderer {
 	@Override
-	public void renderCountLabel(MatrixStack matrices, TextRenderer renderer, float zOffset, ItemStack stack, @Nullable String override) {
+	public void renderCountLabel(MatrixStack matrices, QuadBatchManager quadBatchManager, TextRenderer textRenderer, float zOffset, ItemStack stack, @Nullable String override) {
 		String label = getCountLabel(stack, override);
 		if (label == null) {
 			return;
@@ -42,10 +41,10 @@ public class VanillaCountLabelRenderer implements CountLabelRenderer {
 		matrices.push();
 		matrices.translate(0, 0, zOffset + 200);
 		// TODO figure out if we can NOT render immediately here
-		var immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBufferBuilder());
-		renderer.draw(
+		var immediate = VertexConsumerProvider.immediate(quadBatchManager.getBufferBuilder());
+		textRenderer.draw(
 				label,
-				19 - 2 - renderer.getWidth(label),
+				19 - 2 - textRenderer.getWidth(label),
 				6 + 3,
 				0xFFFFFF,
 				true,

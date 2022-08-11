@@ -1,3 +1,4 @@
+// TODO: Rewrite docs to suit the newest changes!
 /**
  * <h1>Quilt Component API</h1>
  * An QSL library module, allowing the attachment/querying of arbitrary data and/or behaviour to various game objects.
@@ -104,9 +105,8 @@
  * <ol>
  *     <li>You always get back the type that matches your {@link org.quiltmc.qsl.component.api.ComponentType}. In this case that would be an AComponent instance.</li>
  *     <li>
- *         You always get back a {@link org.quiltmc.qsl.base.api.util.Maybe} instance. You need to use its methods to perform actions on the component.
- *         Furthermore it's not recommended to attempt to {@linkplain org.quiltmc.qsl.base.api.util.Maybe#unwrap() unwrap} the instance, because in the
- *         case the injection failed(for whatever reason), this will crash the game instance.
+ *         You always get back a {@link org.jetbrains.annotations.Nullable} instance.
+ *         You need to be careful using its methods to perform actions on the component.
  *     </li>
  * </ol>
  *

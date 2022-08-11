@@ -108,16 +108,16 @@ public class ComponentTestMod implements ModInitializer {
 					}
 
 					var props = player.getWorld().getServer().getSaveProperties();
-					if (props instanceof MinecraftServer levelProperties && player.getWorld().getTime() % 100 == 0) {
-						player.sendMessage(Text.literal(
-								levelProperties.expose(SAVE_FLOAT)
-											   .map(DefaultFloatSerializable::get)
-											   .unwrapOr(0f)
-											   .toString()
-						), false);
+					if (props instanceof MinecraftServer server && player.getWorld().getTime() % 100 == 0) {
+						server.ifPresent(
+								SAVE_FLOAT,
+								saveFloatSerializable -> player.sendMessage(
+										Text.literal(String.valueOf(saveFloatSerializable.get())), false
+								)
+						);
 					}
 
-					player.expose(UUID_THING).ifJust(uuidGenericComponent -> {
+					player.ifPresent(UUID_THING, uuidGenericComponent -> {
 						Entity vehicle = player.getVehicle();
 
 						if (vehicle != null) {
@@ -159,34 +159,34 @@ public class ComponentTestMod implements ModInitializer {
 		// Cached Injection
 		// Components.inject(MinecraftServer.class, SERVER_TICK);
 		ComponentInjector.injector(CreeperEntity.class)
-					 .entry(CREEPER_EXPLODE_TIME).add()
-					 .inject();
+				.entry(CREEPER_EXPLODE_TIME).add()
+				.inject();
 		ComponentInjector.injector(Chunk.class)
-					 .entry(CHUNK_INVENTORY).factory(ChunkInventorySerializable::new).add()
-					 .inherited()
-					 .inject();
+				.entry(CHUNK_INVENTORY).factory(ChunkInventorySerializable::new).add()
+				.inherited()
+				.inject();
 		ComponentInjector.injector(HostileEntity.class)
-					 .entry(HOSTILE_EXPLODE_TIME).add()
-					 .inherited()
-					 .exclude(CreeperEntity.class)
-					 .inject();
+				.entry(HOSTILE_EXPLODE_TIME).add()
+				.inherited()
+				.exclude(CreeperEntity.class)
+				.inject();
 		ComponentInjector.injector(ChestBlockEntity.class)
-					 .entry(CHEST_NUMBER).add()
-					 .inject();
+				.entry(CHEST_NUMBER).add()
+				.inject();
 		ComponentInjector.injector(CowEntity.class)
-					 .entry(COW_INVENTORY).add()
-					 .inject();
+				.entry(COW_INVENTORY).add()
+				.inject();
 		ComponentInjector.injector(ServerPlayerEntity.class)
-					 .entry(PLAYER_TICK).add()
-					 .inject();
+				.entry(PLAYER_TICK).add()
+				.inject();
 		ComponentInjector.injector(PlayerEntity.class)
-					 .entry(UUID_THING).add()
-					 .inherited()
-					 .inject();
+				.entry(UUID_THING).add()
+				.inherited()
+				.inject();
 		ComponentInjector.injector(World.class)
-					 .entry(SAVE_FLOAT).add()
-					 .inherited()
-					 .inject();
+				.entry(SAVE_FLOAT).add()
+				.inherited()
+				.inject();
 	}
 
 	public static final BlockEntityType<TestBlockEntity> TEST_BE_TYPE =

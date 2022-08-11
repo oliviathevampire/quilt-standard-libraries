@@ -63,15 +63,7 @@ public class EntityRenderDispatcherMixin {
 			double entityZ = -MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ());
 
 			for (EntityPart<?> part : multipartEntity.getEntityParts()) {
-				if (part instanceof Entity entityPart) {
-					matrices.push();
-					double entityPartX = entityX + MathHelper.lerp(tickDelta, entityPart.lastRenderX, entityPart.getX());
-					double entityPartY = entityY + MathHelper.lerp(tickDelta, entityPart.lastRenderY, entityPart.getY());
-					double entityPartZ = entityZ + MathHelper.lerp(tickDelta, entityPart.lastRenderZ, entityPart.getZ());
-					matrices.translate(entityPartX, entityPartY, entityPartZ);
-					WorldRenderer.drawBox(matrices, vertices, entityPart.getBoundingBox().offset(-entityPart.getX(), -entityPart.getY(), -entityPart.getZ()), 0.25F, 1.0F, 0.0F, 1.0F);
-					matrices.pop();
-				}
+				part.renderHitbox(matrices, vertices, entityX, entityY, entityZ, entity, tickDelta);
 			}
 		}
 	}

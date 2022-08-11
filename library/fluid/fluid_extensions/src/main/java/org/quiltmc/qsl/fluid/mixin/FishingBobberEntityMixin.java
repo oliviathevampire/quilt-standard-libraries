@@ -53,7 +53,7 @@ public abstract class FishingBobberEntityMixin implements CustomFluidInteracting
 
 	@Inject(method = "tickFishingLogic", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/BlockPos;up()Lnet/minecraft/util/math/BlockPos;"), locals = LocalCapture.CAPTURE_FAILHARD)
 	public void canFish(BlockPos pos, CallbackInfo ci, ServerWorld serverWorld, int i) {
-		FluidState state = serverWorld.getBlockState(pos).getFluidState();
+		FluidState state = serverWorld.getFluidState(pos);
 		QuiltFluid fluid = (QuiltFluid) state.getFluid();
 		if (!state.isIn(this.quilt$canFishingBobberCatchIn()) || !fluid.canFish(state, (FishingBobberEntity) (Object)this)) {
 			ci.cancel();

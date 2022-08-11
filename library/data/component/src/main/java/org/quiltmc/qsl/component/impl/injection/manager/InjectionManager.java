@@ -16,17 +16,11 @@
 
 package org.quiltmc.qsl.component.impl.injection.manager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import net.minecraft.util.Util;
 
-import org.quiltmc.qsl.base.api.util.Maybe;
 import org.quiltmc.qsl.component.api.Components;
 import org.quiltmc.qsl.component.api.injection.ComponentEntry;
 import org.quiltmc.qsl.component.api.injection.predicate.InjectionPredicate;
@@ -60,12 +54,12 @@ public abstract class InjectionManager<P extends InjectionPredicate, I> {
 		return this.injections.entrySet().stream();
 	}
 
-	protected Maybe<List<I>> getCache(Class<?> clazz) {
+	protected Optional<List<I>> getCache(Class<?> clazz) {
 		if (!this.cache.containsKey(clazz)) {
-			return Maybe.nothing();
+			return Optional.empty();
 		}
 
-		return Maybe.just(this.cache.get(clazz));
+		return Optional.of(this.cache.get(clazz));
 	}
 
 	protected void record(Class<?> providerClass, List<I> injections) {

@@ -16,10 +16,14 @@
 
 package org.quiltmc.qsl.fluid.impl;
 
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import org.quiltmc.qsl.base.api.util.InjectedInterface;
 
-@InjectedInterface(Entity.class)
+@InjectedInterface({BoatEntity.class, ClientPlayerEntity.class, Entity.class, FishingBobberEntity.class, LivingEntity.class})
 public interface CustomFluidInteracting {
 	boolean quilt$isInCustomFluid();
 

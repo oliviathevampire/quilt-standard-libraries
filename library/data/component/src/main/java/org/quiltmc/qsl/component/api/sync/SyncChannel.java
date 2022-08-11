@@ -87,7 +87,8 @@ public class SyncChannel<P extends ComponentProvider, U> {
 			Chunk::getPos,
 			chunkPos -> ClientResolution.chunk(chunkPos),
 			(serverPlayer, chunkPos) -> serverPlayer.getWorld().getChunk(chunkPos.x, chunkPos.z),
-			chunk -> PlayerLookup.tracking(((ServerWorld) ((WorldChunk) chunk).getWorld()), chunk.getPos()) // only called server side so the cast is safe
+			chunk -> PlayerLookup.tracking(((ServerWorld) ((WorldChunk) chunk).getWorld()), chunk.getPos())
+			// only called server side so the cast is safe
 	); // **Careful**: This only works with WorldChunks not other chunk types!
 
 	// World
@@ -121,9 +122,9 @@ public class SyncChannel<P extends ComponentProvider, U> {
 	protected final NetworkCodec<Queue<U>> queueCodec;
 
 	public SyncChannel(Identifier channelId, NetworkCodec<U> codec,
-					Function<P, U> identifyingDataTransformer,
-					Function<U, P> clientLocator, BiFunction<ServerPlayerEntity, U, P> serverLocator,
-					Function<? super P, Collection<ServerPlayerEntity>> playerProvider) {
+					   Function<P, U> identifyingDataTransformer,
+					   Function<U, P> clientLocator, BiFunction<ServerPlayerEntity, U, P> serverLocator,
+					   Function<? super P, Collection<ServerPlayerEntity>> playerProvider) {
 		this.channelId = channelId;
 		this.codec = codec;
 		this.identifyingDataTransformer = identifyingDataTransformer;
@@ -159,14 +160,16 @@ public class SyncChannel<P extends ComponentProvider, U> {
 		P providerAsP = (P) provider;
 		var buf = this.toClientBuffer(providerAsP); // append provider data
 		filler.fill(buf);                                         // append all the container data
-		ServerPlayNetworking.send(players.isEmpty() ? this.playerProvider.apply(providerAsP) : players, this.channelId, buf);
+		ServerPlayNetworking.send(
+				players.isEmpty() ? this.playerProvider.apply(providerAsP) : players, this.channelId, buf);
 	}
 
 	public void syncFromQueue(Queue<ComponentType<?>> pendingSync, ComponentProvider provider) {
 		this.syncFromQueue(pendingSync, provider, List.of());
 	}
 
-	public void syncFromQueue(Queue<ComponentType<?>> pendingSync, ComponentProvider provider, Collection<ServerPlayerEntity> players) {
+	public void syncFromQueue(Queue<ComponentType<?>> pendingSync, ComponentProvider provider,
+							  Collection<ServerPlayerEntity> players) {
 		if (pendingSync.isEmpty()) {
 			return;
 		}
@@ -177,7 +180,7 @@ public class SyncChannel<P extends ComponentProvider, U> {
 			while (!pendingSync.isEmpty()) {
 				var currentType = pendingSync.poll();
 				ComponentType.NETWORK_CODEC.encode(buf, currentType); // append type rawId
-				((Syncable) provider.expose(currentType).unwrap()).writeToBuf(buf); // append component data
+				provider.ifPresent(currentType, o -> ((Syncable) o).writeToBuf(buf));
 			}
 		});
 	}
@@ -197,7 +200,7 @@ public class SyncChannel<P extends ComponentProvider, U> {
 
 			for (int i = 0; i < size; i++) {
 				ComponentType<?> type = ComponentType.NETWORK_CODEC.decode(buf); // consume rawId
-				provider.expose(type).ifJust(component -> ((Syncable) component).readFromBuf(buf)); // consume component data
+				provider.ifPresent(type, o -> ((Syncable) o).readFromBuf(buf));
 			}
 
 			buf.release(); // make sure the buffer is properly freed
@@ -206,6 +209,7 @@ public class SyncChannel<P extends ComponentProvider, U> {
 
 	public void handleClientSyncRequest(MinecraftServer server, ServerPlayerEntity sender, PacketByteBuf buf) {
 		buf.retain();
+
 		server.execute(() -> {
 			Queue<U> queued = this.queueCodec.decode(buf); // we retrieve the queue of identifying data
 
@@ -231,7 +235,8 @@ public class SyncChannel<P extends ComponentProvider, U> {
 	 *
 	 * @param provider The provider to force the sync on.
 	 * @param sender   The client that requested the sync.
-	 * @apiNote Avoid using this to sync components. Sync should be initiated from the server, unless specifically needed.
+	 * @apiNote Avoid using this to sync components. Sync should be initiated from the server, unless specifically
+	 * needed.
 	 */
 	public void forceSync(ComponentProvider provider, ServerPlayerEntity sender) {
 		var queue = new ArrayDeque<ComponentType<?>>();
@@ -301,7 +306,10 @@ public class SyncChannel<P extends ComponentProvider, U> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.channelId, this.codec, this.identifyingDataTransformer, this.clientLocator, this.serverLocator, this.playerProvider);
+		return Objects.hash(
+				this.channelId, this.codec, this.identifyingDataTransformer, this.clientLocator, this.serverLocator,
+				this.playerProvider
+		);
 	}
 
 	@Override

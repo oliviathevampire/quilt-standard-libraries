@@ -44,17 +44,10 @@ public abstract class SolidColorItemBarRenderer implements ItemBarRenderer {
 	}
 
 	@Override
-	public void renderItemBar(MatrixStack matrices, TextRenderer renderer, float zOffset, ItemStack stack) {
-		RenderSystem.disableDepthTest();
-		RenderSystem.disableTexture();
-		RenderSystem.disableBlend();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder buffer = tessellator.getBufferBuilder();
-		GuiRendererHelper.renderQuad(matrices, buffer, 2, 0, 13, 2, getItemBarBackground(stack));
-		GuiRendererHelper.renderQuad(matrices, buffer, 2, 0, getItemBarStep(stack), 1, getItemBarForeground(stack));
-		RenderSystem.enableBlend();
-		RenderSystem.enableTexture();
-		RenderSystem.enableDepthTest();
+	public void renderItemBar(MatrixStack matrices, QuadBatchManager quadBatchManager, TextRenderer textRenderer, float zOffset, ItemStack stack) {
+		var buffer = quadBatchManager.beginQuads();
+		QuadBuilder.add(matrices, buffer, 2, 0, 13, 2, getItemBarBackground(stack));
+		QuadBuilder.add(matrices, buffer, 2, 0, getItemBarStep(stack), 1, getItemBarForeground(stack));
 	}
 
 	/**

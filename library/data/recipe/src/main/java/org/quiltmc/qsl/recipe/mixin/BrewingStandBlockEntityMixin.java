@@ -16,6 +16,7 @@
 
 package org.quiltmc.qsl.recipe.mixin;
 
+import net.minecraft.nbt.NbtCompound;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -138,5 +139,15 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
 	@Inject(method = "isValid", at = @At(value = "RETURN", ordinal = 2), cancellable = true)
 	private void isValidPotionItem(int slot, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
 		cir.setReturnValue(stack.isIn(RecipeImpl.VALID_INPUTS) && this.getStack(slot).isEmpty());
+	}
+
+	@Inject(method = "readNbt", at = @At("TAIL"))
+	private void readBrewTimeAsInt(NbtCompound nbt, CallbackInfo info) {
+		this.brewTime = nbt.getInt("BrewTime");
+	}
+
+	@Inject(method = "writeNbt", at = @At("TAIL"))
+	private void writeBrewingTimeAsInt(NbtCompound nbt, CallbackInfo info) {
+		nbt.putInt("BrewTime", this.brewTime);
 	}
 }
