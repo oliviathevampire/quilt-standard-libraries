@@ -22,6 +22,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+
+import org.quiltmc.qsl.registry.api.StatusEffectsSerializationConstants;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,23 +34,32 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Modify storing of status effect to make it more mod friendly
+ * Modifies storing of status effect to make it more mod friendly.
  * <p>
  * Minecraft by default serializes status effects as raw registry value limited to a byte!
  * Which isn't great mod compatibility wise (raw ids shouldn't be considered stable)
  * and limits to supporting only 256 status effects globally!
  */
-@SuppressWarnings({"InvalidInjectorMethodSignature"})
 @Mixin(StatusEffectInstance.class)
 public class StatusEffectInstanceMixin {
 	@Shadow
 	@Final
 	private StatusEffect type;
 
-	@ModifyVariable(method = "fromNbt(Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/entity/effect/StatusEffectInstance;", at = @At("STORE"), ordinal = 0)
+	@Inject(method = "writeNbt", at = @At("TAIL"))
+	private void quilt$storeIdentifier(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+		nbt.putString(StatusEffectsSerializationConstants.STATUS_EFFECT_INSTANCE_ID_KEY, Registry.STATUS_EFFECT.getId(this.type).toString());
+	}
+
+	@SuppressWarnings({"InvalidInjectorMethodSignature"})
+	@ModifyVariable(
+			method = "fromNbt(Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/entity/effect/StatusEffectInstance;",
+			at = @At("STORE"),
+			ordinal = 0
+	)
 	private static StatusEffect quilt$readIdentifier(StatusEffect effect, NbtCompound compound) {
-		if (compound.contains("quilt:id", NbtElement.STRING_TYPE)) {
-			var identifier = Identifier.tryParse(compound.getString("quilt:id"));
+		if (compound.contains(StatusEffectsSerializationConstants.STATUS_EFFECT_INSTANCE_ID_KEY, NbtElement.STRING_TYPE)) {
+			var identifier = Identifier.tryParse(compound.getString(StatusEffectsSerializationConstants.STATUS_EFFECT_INSTANCE_ID_KEY));
 
 			if (identifier != null && Registry.STATUS_EFFECT.containsId(identifier)) {
 				return Registry.STATUS_EFFECT.get(identifier);
@@ -57,8 +69,4 @@ public class StatusEffectInstanceMixin {
 		return effect;
 	}
 
-	@Inject(method = "writeNbt", at = @At("TAIL"))
-	private void quilt$storeIdentifier(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
-		nbt.putString("quilt:id", Registry.STATUS_EFFECT.getId(this.type).toString());
-	}
 }

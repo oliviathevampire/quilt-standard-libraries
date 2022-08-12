@@ -29,6 +29,6 @@ import org.quiltmc.qsl.block.extensions.api.client.BlockRenderLayerMap;
 public final class ClientInitializer implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
-		BlockRenderLayerMap.put(RenderLayer.getTranslucent(), Initializer.BLOCK);
+		BlockRenderLayerMap.put(RenderLayer.getTranslucent(), BlockExtensionsTestMod.BLOCK);
 	}
 }

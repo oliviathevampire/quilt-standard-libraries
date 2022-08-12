@@ -66,7 +66,7 @@ public class QslLibraryDependency implements Named, Serializable {
 		API(JavaPlugin.API_CONFIGURATION_NAME, true),
 		IMPLEMENTATION(JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, true),
 		TESTMOD("testmodImplementation", false),
-		COMPILE_ONLY("compileOnly", false),
+		COMPILE_ONLY(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME, false),
 		RUNTIME_ONLY(JavaPlugin.RUNTIME_ONLY_CONFIGURATION_NAME, true);
 
 		@Serial

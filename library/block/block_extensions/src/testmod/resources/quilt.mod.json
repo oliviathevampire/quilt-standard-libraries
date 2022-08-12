@@ -12,7 +12,7 @@
     "load_type": "always",
     "entrypoints": {
       "init": [
-        "org.quiltmc.qsl.block.extensions.test.Initializer"
+        "org.quiltmc.qsl.block.extensions.test.BlockExtensionsTestMod"
       ],
       "client_init": [
         "org.quiltmc.qsl.block.extensions.test.ClientInitializer"
