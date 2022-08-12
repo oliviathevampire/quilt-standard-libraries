@@ -28,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.TagKey;
 
 import org.quiltmc.qsl.item.content.registry.impl.ItemContentRegistriesInitializer;
@@ -35,7 +36,7 @@ import org.quiltmc.qsl.item.content.registry.impl.ItemContentRegistriesInitializ
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class AbstractFurnaceBlockEntityMixin {
 	@Shadow
-	private int burnTime;
+	int burnTime;
 
 	@Inject(method = "createFuelTimeMap", at = @At("HEAD"), cancellable = true)
 	private static void returnCachedMap(CallbackInfoReturnable<Map<Item, Integer>> cir) {
@@ -52,8 +53,9 @@ public abstract class AbstractFurnaceBlockEntityMixin {
 		}
 	}
 
-	//Serializes burn time as an integer instead of a short
-	//Should not cause any desyncs as BE sync packets are now NBT
+	// Serializes burn time as an integer instead of a short.
+	// Should not cause any desyncs as BE sync packets are now NBT.
+
 	@Inject(method = "readNbt", at = @At("TAIL"))
 	private void readBurnTimeAsInt(NbtCompound nbt, CallbackInfo info) {
 		this.burnTime = nbt.getInt("BurnTime");
