@@ -30,13 +30,10 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-@SuppressWarnings("unchecked")
 public class QuiltKeyBindsConfigManager {
-	public static final QuiltKeyBindsConfig CONFIG = QuiltConfig.create("qsl", "key_binds", QuiltKeyBindsConfig.class);
-
-	public static final TrackedValue<Boolean> SHOW_TUTORIAL_TOAST = (TrackedValue<Boolean>) CONFIG.getValue(List.of("show_tutorial_toast"));
-	public static final TrackedValue<ValueMap<ValueList<String>>> KEY_BINDS = (TrackedValue<ValueMap<ValueList<String>>>) CONFIG.getValue(List.of("key_binds"));
-	public static final TrackedValue<ValueMap<ValueList<String>>> UNUSED_KEY_BINDS = (TrackedValue<ValueMap<ValueList<String>>>) CONFIG.getValue(List.of("unused_key_binds"));
+	public static final boolean SHOW_TUTORIAL_TOAST = QuiltKeyBindsConfig.CONFIG.show_tutorial_toast;
+	public static final ValueMap<ValueList<String>> KEY_BINDS = QuiltKeyBindsConfig.CONFIG.key_binds;
+	public static final ValueMap<ValueList<String>> UNUSED_KEY_BINDS = QuiltKeyBindsConfig.CONFIG.unused_key_binds;
 
 	public QuiltKeyBindsConfigManager() { }
 
@@ -44,13 +41,13 @@ public class QuiltKeyBindsConfigManager {
 		var filteredList = new ArrayList<>(KeyBindRegistryImpl.getAllKeyBinds());
 		List<String> removalList = new ArrayList<>();
 
-		KEY_BINDS.value().putAll(UNUSED_KEY_BINDS.value());
-		UNUSED_KEY_BINDS.value().clear();
+		KEY_BINDS.putAll(UNUSED_KEY_BINDS);
+		UNUSED_KEY_BINDS.clear();
 
-		for (String keyBindKey : KEY_BINDS.value().keySet()) {
+		for (String keyBindKey : KEY_BINDS.keySet()) {
 			System.out.println(keyBindKey);
 			var keyBind = KeyBindRegistryImpl.getKeyBind(keyBindKey);
-			var keyList = KEY_BINDS.value().get(keyBindKey);
+			var keyList = KEY_BINDS.get(keyBindKey);
 			if (keyBind != null && keyBind.isEnabled()) {
 				if (load) {
 					switch (keyList.size()) {
@@ -64,7 +61,7 @@ public class QuiltKeyBindsConfigManager {
 
 							keyBind.setBoundChord(new KeyChord(map));
 						}
-					};
+					}
 				} else {
 					ValueList<String> list;
 					if (keyBind.getBoundChord() == null) {
@@ -86,18 +83,18 @@ public class QuiltKeyBindsConfigManager {
 				filteredList.remove(keyBind);
 			} else {
 				removalList.add(keyBindKey);
-				UNUSED_KEY_BINDS.value().put(keyBindKey, keyList);
+				UNUSED_KEY_BINDS.put(keyBindKey, keyList);
 			}
 		}
 
-		removalList.forEach(key -> KEY_BINDS.value().remove(key));
+		removalList.forEach(KEY_BINDS::remove);
 
 		for (KeyBind keyBind : filteredList) {
 			if (keyBind.isEnabled()) {
 				ValueList<String> list;
 				if (keyBind.getBoundChord() == null) {
 					if (keyBind.getBoundKey().equals(InputUtil.UNKNOWN_KEY)) {
-						list = ValueList.create("", new String[] {});
+						list = ValueList.create("");
 					} else {
 						list = ValueList.create("", keyBind.getKeyTranslationKey());
 					}
@@ -107,7 +104,7 @@ public class QuiltKeyBindsConfigManager {
 					list = ValueList.create("", array);
 				}
 
-				KEY_BINDS.value().put(keyBind.getTranslationKey(), list);
+				KEY_BINDS.put(keyBind.getTranslationKey(), list);
 			}
 		}
 	}

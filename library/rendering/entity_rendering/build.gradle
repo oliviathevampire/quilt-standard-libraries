@@ -11,9 +11,11 @@ qslModule {
 	moduleDependencies {
 		core {
 			api("qsl_base")
-			testmodOnly("resource_loader")
+			api("resource_loader")
 		}
 	}
+	clientOnly()
+
 	injectedInterface("net/minecraft/class_1741") {
 		values = ["org/quiltmc/qsl/rendering/entity/api/client/QuiltArmorMaterialExtensions"]
 	}

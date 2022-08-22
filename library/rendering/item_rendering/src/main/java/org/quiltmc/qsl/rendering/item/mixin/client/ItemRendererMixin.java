@@ -17,9 +17,6 @@
 package org.quiltmc.qsl.rendering.item.mixin.client;
 
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.rendering.item.api.client.QuadBatchManager;
-import org.quiltmc.qsl.rendering.item.impl.client.ItemRendererThreadData;
-import org.quiltmc.qsl.rendering.item.impl.client.QuadBatchManagerImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,7 +24,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -36,13 +32,17 @@ import net.minecraft.item.ItemStack;
 
 import org.quiltmc.qsl.rendering.item.api.client.ItemBarRenderer;
 import org.quiltmc.qsl.rendering.item.api.client.QuiltItemRendering;
+import org.quiltmc.qsl.rendering.item.impl.client.ItemRendererThreadData;
+import org.quiltmc.qsl.rendering.item.impl.client.QuadBatchManagerImpl;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-	@Unique private final ThreadLocal<ItemRendererThreadData> quilt$threadData
+	@Unique
+	private final ThreadLocal<ItemRendererThreadData> quilt$threadData
 			= ThreadLocal.withInitial(ItemRendererThreadData::new);
 
-	@Shadow public float zOffset;
+	@Shadow
+	public float zOffset;
 
 	@Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
 			at = @At("HEAD"), cancellable = true)
@@ -54,7 +54,7 @@ public abstract class ItemRendererMixin {
 
 		var item = stack.getItem();
 
-		var threadData = quilt$threadData.get();
+		var threadData = this.quilt$threadData.get();
 
 		var matrices = threadData.matrices();
 		matrices.push();
@@ -66,7 +66,7 @@ public abstract class ItemRendererMixin {
 		if (item.preRenderOverlay(matrices, quadBatchManager, renderer, this.zOffset, stack)) {
 			if (QuiltItemRendering.areOverlayComponentsCustomized(item)) {
 				ci.cancel();
-				renderCustomGuiItemOverlay(matrices, quadBatchManager, renderer, stack, countLabel);
+				this.renderCustomGuiItemOverlay(matrices, quadBatchManager, renderer, stack, countLabel);
 			}
 		} else {
 			ci.cancel();
@@ -78,7 +78,7 @@ public abstract class ItemRendererMixin {
 	@Redirect(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
 			at = @At(value = "NEW", target = "net/minecraft/client/util/math/MatrixStack"))
 	private MatrixStack quilt$avoidMatrixStackAllocation() {
-		return quilt$threadData.get().matrices(); // no need to push now, matrices are only modified when count label is rendered
+		return this.quilt$threadData.get().matrices(); // no need to push now, matrices are only modified when count label is rendered
 	}
 
 	@Redirect(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
@@ -92,15 +92,15 @@ public abstract class ItemRendererMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;draw()V",
 					shift = At.Shift.AFTER))
 	private void quilt$renderCountLabel_popMatrixStack(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel,
-													   CallbackInfo ci) {
-		quilt$threadData.get().matrices().pop();
+														CallbackInfo ci) {
+		this.quilt$threadData.get().matrices().pop();
 	}
 
 	@Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
 			at = @At("TAIL"))
 	private void quilt$invokePostRenderOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel,
-											   CallbackInfo ci) {
-		var threadData = quilt$threadData.get();
+												CallbackInfo ci) {
+		var threadData = this.quilt$threadData.get();
 		var matrices = threadData.matrices();
 		var quadBatchManager = threadData.quadBatchManager();
 

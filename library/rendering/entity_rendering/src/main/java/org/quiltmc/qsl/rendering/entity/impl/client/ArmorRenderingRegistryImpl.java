@@ -16,6 +16,7 @@
 
 package org.quiltmc.qsl.rendering.entity.impl.client;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -37,13 +38,17 @@ import org.jetbrains.annotations.Nullable;
 
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.rendering.entity.api.client.ArmorRenderingRegistry;
+import org.slf4j.Logger;
 
 @ApiStatus.Internal
 @Environment(EnvType.CLIENT)
 public final class ArmorRenderingRegistryImpl {
+	public static final Logger LOGGER = LogUtils.getLogger();
+
 	private ArmorRenderingRegistryImpl() {
 		throw new UnsupportedOperationException("ArmorRenderingRegistryImpl only contains static declarations.");
 	}
+
 	@Contract("-> new")
 	public static @NotNull Event<ArmorRenderingRegistry.TextureProvider> createTextureProviderEvent() {
 		return Event.create(ArmorRenderingRegistry.TextureProvider.class,
@@ -93,6 +98,7 @@ public final class ArmorRenderingRegistryImpl {
 		if (e == null) {
 			return texture;
 		}
+
 		return e.invoker().getArmorTexture(texture, entity, stack, slot, useSecondTexture, suffix);
 	}
 
@@ -102,6 +108,7 @@ public final class ArmorRenderingRegistryImpl {
 		if (e == null) {
 			return model;
 		}
+
 		return e.invoker().getArmorModel(model, entity, stack, slot);
 	}
 }
