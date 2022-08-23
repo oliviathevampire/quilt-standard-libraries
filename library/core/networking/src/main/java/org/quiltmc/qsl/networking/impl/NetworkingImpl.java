@@ -21,6 +21,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.jetbrains.annotations.ApiStatus;
+
+import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
+import org.quiltmc.qsl.networking.api.channel.NetworkChannel;
+
+import org.quiltmc.qsl.networking.impl.channel.NetworkChannelImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +86,9 @@ public final class NetworkingImpl {
 
 		ServerLoginNetworking.registerGlobalReceiver(EARLY_REGISTRATION_CHANNEL, NetworkingImpl::receiveEarlyRegistration);
 		ServerLoginNetworking.registerGlobalReceiver(EARLY_REGISTRATION_CHANNEL_FABRIC, NetworkingImpl::receiveEarlyRegistration);
+
+		// Register Common Channels
+		ServerLifecycleEvents.READY.register(NetworkChannel.REGISTRATION_PHASE, NetworkChannelImpl::onServerReady);
 	}
 
 	public static boolean isReservedPlayChannel(Identifier channelName) {
