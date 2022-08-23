@@ -59,7 +59,7 @@ public final class QuiltDataFixesInternalsImpl extends QuiltDataFixesInternals {
 
 	@Override
 	public @Nullable DataFixerEntry getFixerEntry(@NotNull String modId) {
-		return this.modDataFixers.get(modId);
+		return modDataFixers.get(modId);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public final class QuiltDataFixesInternalsImpl extends QuiltDataFixesInternals {
 	@Override
 	public void freeze() {
 		if (!this.frozen) {
-			this.modDataFixers = Collections.unmodifiableMap(this.modDataFixers);
+			modDataFixers = Collections.unmodifiableMap(this.modDataFixers);
 		}
 
 		this.frozen = true;

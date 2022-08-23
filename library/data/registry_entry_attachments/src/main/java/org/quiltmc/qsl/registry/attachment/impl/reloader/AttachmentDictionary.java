@@ -16,8 +16,6 @@
 
 package org.quiltmc.qsl.registry.attachment.impl.reloader;
 
-import static org.quiltmc.qsl.registry.attachment.impl.reloader.RegistryEntryAttachmentReloader.LOGGER;
-
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +34,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 import org.quiltmc.qsl.registry.attachment.api.RegistryEntryAttachment;
+
+import static org.quiltmc.qsl.registry.attachment.impl.reloader.RegistryEntryAttachmentReloader.LOGGER;
 
 final class AttachmentDictionary<R, V> {
 	private final Registry<R> registry;
@@ -85,7 +85,7 @@ final class AttachmentDictionary<R, V> {
 							+ JsonHelper.getType(values));
 				}
 			} catch (JsonSyntaxException e) {
-				LOGGER.error("Invalid JSON file " + resourceId + ", ignoring", e);
+				LOGGER.error("Invalid JSON file '" + resourceId + "', ignoring", e);
 				return;
 			}
 

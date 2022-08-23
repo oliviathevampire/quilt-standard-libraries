@@ -16,9 +16,6 @@
 
 package org.quiltmc.qsl.datafixerupper.api;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -34,6 +31,9 @@ import net.minecraft.util.Util;
 
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.datafixerupper.impl.QuiltDataFixesInternals;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Provides methods to register custom {@link DataFixer}s.

@@ -19,6 +19,13 @@ package org.quiltmc.qsl.datafixerupper.impl;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.schemas.Schema;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
+
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
@@ -27,7 +34,7 @@ import org.jetbrains.annotations.*;
 
 @ApiStatus.Internal
 public abstract class QuiltDataFixesInternals {
-	private static QuiltDataFixesInternals instance;
+	public record DataFixerEntry(DataFixer dataFixer, int currentVersion) {}
 
 	@Contract(pure = true)
 	@Range(from = 0, to = Integer.MAX_VALUE)
@@ -61,13 +68,16 @@ public abstract class QuiltDataFixesInternals {
 									   @Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
 									   @NotNull DataFixer dataFixer);
 
+	@Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
+	@NotNull DataFixer dataFixer);
+
 	public abstract @Nullable DataFixerEntry getFixerEntry(@NotNull String modId);
 
 	@Contract(value = "-> new", pure = true)
 	public abstract @NotNull Schema createBaseSchema();
 
 	public abstract @NotNull NbtCompound updateWithAllFixers(@NotNull DataFixTypes dataFixTypes,
-															 @NotNull NbtCompound compound);
+			@NotNull NbtCompound compound);
 
 	@Contract("_ -> new")
 	public abstract @NotNull NbtCompound addModDataVersions(@NotNull NbtCompound compound);
@@ -76,7 +86,4 @@ public abstract class QuiltDataFixesInternals {
 
 	@Contract(pure = true)
 	public abstract boolean isFrozen();
-
-	public record DataFixerEntry(DataFixer dataFixer, int currentVersion) {
-	}
 }

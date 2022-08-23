@@ -16,28 +16,27 @@
 
 package org.quiltmc.qsl.registry.mixin.patch;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.passive.MooshroomEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import org.jetbrains.annotations.Nullable;
-
-import org.quiltmc.qsl.registry.api.StatusEffectsSerializationConstants;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.passive.MooshroomEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+import org.quiltmc.qsl.registry.api.StatusEffectsSerializationConstants;
+
 /**
  * Modifies storing of status effect to make it more mod friendly.
  * <p>
- * Minecraft by default serializes status effects as raw registry value limited to a byte!
- * Which isn't great mod compatibility wise (raw ids shouldn't be considered stable)
- * and limits to supporting only 256 status effects globally!
+ * Minecraft by default serializes status effects as raw registry value, which are not stable at all!
+ * Raw registry values may change randomly while adding or removing mods, this may create inconsistencies and corruption.
+ * Storing the full identifier fixes this issue. This is the last place where the flattening hasn't taken effect.
  */
 @Mixin(MooshroomEntity.class)
 public class MooshroomEntityMixin {

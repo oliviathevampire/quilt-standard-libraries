@@ -28,7 +28,6 @@ import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -47,6 +46,7 @@ import net.minecraft.util.registry.SimpleRegistry;
 import org.quiltmc.qsl.registry.impl.event.MutableRegistryEntryContextImpl;
 import org.quiltmc.qsl.registry.impl.event.RegistryEventStorage;
 import org.quiltmc.qsl.registry.impl.sync.RegistryFlag;
+import org.quiltmc.qsl.registry.impl.sync.ServerRegistrySync;
 import org.quiltmc.qsl.registry.impl.sync.SynchronizedRegistry;
 
 /**
@@ -153,8 +153,10 @@ public abstract class SimpleRegistryMixin<V> extends Registry<V> implements Sync
 			var status = Status.VANILLA;
 			var optional = RegistryFlag.isOptional(this.quilt$flags);
 			for (var entry : this.rawIdToEntry) {
+				if (entry == null) continue;
+
 				var namespace = entry.getRegistryKey().getValue().getNamespace();
-				if (entry != null && !namespace.equals("minecraft") && !namespace.equals("brigadier")) {
+				if (!ServerRegistrySync.isNamespaceVanilla(namespace)) {
 					var flag = this.quilt$entryToFlag.getOrDefault(entry.value(), (byte) 0);
 					if (!RegistryFlag.isSkipped(flag)) {
 						if (RegistryFlag.isOptional(flag)) {
@@ -215,6 +217,8 @@ public abstract class SimpleRegistryMixin<V> extends Registry<V> implements Sync
 		}
 
 		for (var holder : holders) {
+			if (holder == null) continue;
+
 			var id = ++currentId;
 			this.entryToRawId.put(holder.value(), id);
 			this.rawIdToEntry.set(id, holder);
