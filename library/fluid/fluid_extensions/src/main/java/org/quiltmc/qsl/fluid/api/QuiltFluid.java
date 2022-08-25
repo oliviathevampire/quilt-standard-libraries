@@ -30,7 +30,8 @@ import net.minecraft.world.WorldView;
 
 public abstract class QuiltFluid extends FlowableFluid implements QuiltFlowableFluidExtensions {
 	/**
-	 * @return whether the given fluid an instance of this fluid
+	 * @param fluid - The fluid which tries to mix.
+	 * @return whether the given fluid is an instance of this fluid.
 	 */
 	@Override
 	public boolean matchesType(Fluid fluid) {

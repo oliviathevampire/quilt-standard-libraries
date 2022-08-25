@@ -19,6 +19,5 @@
       "quilt_loader",
       "quilt_entity_interaction"
     ]
-  },
-  "mixin": "quilt_entity_interaction_testmod.mixins.json"
+  }
 }

@@ -15,7 +15,12 @@ qslModule {
 		block {
 			api("block_extensions")
 		}
+		core {
+			api("registry")
+		}
 	}
+
+	accessWidener()
 
 	injectedInterface("net/minecraft/class_3616") {
 		values = ["org/quiltmc/qsl/fluid/api/QuiltFlowableFluidExtensions"]

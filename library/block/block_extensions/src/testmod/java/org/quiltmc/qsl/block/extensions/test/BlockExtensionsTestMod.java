@@ -21,6 +21,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.GlassBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
+import net.minecraft.block.VineBlock;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -42,6 +43,11 @@ public final class BlockExtensionsTestMod implements ModInitializer {
 			new GlassBlock(QuiltBlockSettings.copyOf(Blocks.GLASS)
 					.material(MATERIAL)
 					.luminance(15)));
+
+	public static final Block BLOCK2 = Registry.register(Registry.BLOCK,
+			new Identifier(ID, "test_block2"),
+			new VineBlock(QuiltBlockSettings.copyOf(Blocks.VINE)
+					.ticksRandomly(false)));
 
 	@Override
 	public void onInitialize(ModContainer mod) {}

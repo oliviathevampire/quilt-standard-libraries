@@ -16,24 +16,27 @@
 
 package org.quiltmc.qsl.key.binds.impl.config;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import com.mojang.blaze3d.platform.InputUtil;
+
 import net.minecraft.client.option.KeyBind;
-import org.quiltmc.config.api.values.TrackedValue;
+
 import org.quiltmc.config.api.values.ValueList;
 import org.quiltmc.config.api.values.ValueMap;
 import org.quiltmc.loader.api.config.QuiltConfig;
 import org.quiltmc.qsl.key.binds.impl.KeyBindRegistryImpl;
 import org.quiltmc.qsl.key.binds.impl.chords.KeyChord;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 public class QuiltKeyBindsConfigManager {
-	public static final boolean SHOW_TUTORIAL_TOAST = QuiltKeyBindsConfig.CONFIG.show_tutorial_toast;
-	public static final ValueMap<ValueList<String>> KEY_BINDS = QuiltKeyBindsConfig.CONFIG.key_binds;
-	public static final ValueMap<ValueList<String>> UNUSED_KEY_BINDS = QuiltKeyBindsConfig.CONFIG.unused_key_binds;
+	public static final QuiltKeyBindsConfig CONFIG = QuiltConfig.create("quilt/qsl", "key_binds", QuiltKeyBindsConfig.class);
+
+	public static final boolean SHOW_TUTORIAL_TOAST = CONFIG.show_tutorial_toast;
+	public static final ValueMap<ValueList<String>> KEY_BINDS = CONFIG.key_binds;
+	public static final ValueMap<ValueList<String>> UNUSED_KEY_BINDS = CONFIG.unused_key_binds;
 
 	public QuiltKeyBindsConfigManager() { }
 

@@ -19,26 +19,21 @@ package org.quiltmc.qsl.rendering.entity.impl.client;
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.EquipmentSlot;
-
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.util.Identifier;
-
-import org.jetbrains.annotations.ApiStatus;
-
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
-import org.jetbrains.annotations.Nullable;
 
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.rendering.entity.api.client.ArmorRenderingRegistry;
-import org.slf4j.Logger;
 
 @ApiStatus.Internal
 @Environment(EnvType.CLIENT)
@@ -98,7 +93,6 @@ public final class ArmorRenderingRegistryImpl {
 		if (e == null) {
 			return texture;
 		}
-
 		return e.invoker().getArmorTexture(texture, entity, stack, slot, useSecondTexture, suffix);
 	}
 
@@ -108,7 +102,6 @@ public final class ArmorRenderingRegistryImpl {
 		if (e == null) {
 			return model;
 		}
-
 		return e.invoker().getArmorModel(model, entity, stack, slot);
 	}
 }

@@ -42,6 +42,8 @@ public abstract class QuiltDataFixesInternals {
 		return compound.getInt(modId + "_DataVersion");
 	}
 
+	private static QuiltDataFixesInternals instance;
+
 	public static @NotNull QuiltDataFixesInternals get() {
 		if (instance == null) {
 			Schema latestVanillaSchema;
@@ -68,16 +70,13 @@ public abstract class QuiltDataFixesInternals {
 									   @Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
 									   @NotNull DataFixer dataFixer);
 
-	@Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
-	@NotNull DataFixer dataFixer);
-
 	public abstract @Nullable DataFixerEntry getFixerEntry(@NotNull String modId);
 
 	@Contract(value = "-> new", pure = true)
 	public abstract @NotNull Schema createBaseSchema();
 
 	public abstract @NotNull NbtCompound updateWithAllFixers(@NotNull DataFixTypes dataFixTypes,
-			@NotNull NbtCompound compound);
+															 @NotNull NbtCompound compound);
 
 	@Contract("_ -> new")
 	public abstract @NotNull NbtCompound addModDataVersions(@NotNull NbtCompound compound);

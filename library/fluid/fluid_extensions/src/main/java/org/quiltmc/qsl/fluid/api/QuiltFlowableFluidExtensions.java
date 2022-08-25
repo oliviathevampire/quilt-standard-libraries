@@ -16,6 +16,8 @@
 
 package org.quiltmc.qsl.fluid.api;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -41,9 +43,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import org.quiltmc.qsl.base.api.util.InjectedInterface;
 
-import javax.annotation.Nullable;
+import org.quiltmc.qsl.base.api.util.InjectedInterface;
 
 @InjectedInterface({WaterFluid.class, LavaFluid.class})
 public interface QuiltFlowableFluidExtensions {
@@ -115,13 +116,17 @@ public interface QuiltFlowableFluidExtensions {
 	}
 
 	/**
-	 * Toggles weather or not a player can sprint swim in your fluid
+	 * Toggles whether a player can sprint swim in your fluid
 	 */
 	default boolean allowSprintSwimming(FluidState state, Entity affected) {
-		return true;
+		return !state.isIn(FluidTags.LAVA);
 	}
 
 	/**
+	 * Modifies the horizontal viscosity, taking Dolphin's Grace into the mix.
+	 *
+	 * @param affected            - The LivingEntity whose horizontalViscosity should be modified.
+	 * @param horizontalViscosity - Unmodified horizontalViscosity of the fluid.
 	 * @return an updated horizontalViscosity, specifically regarding potion effects
 	 */
 	default float modifyEntityHorizontalViscosity(LivingEntity affected, float horizontalViscosity) {
@@ -131,22 +136,57 @@ public interface QuiltFlowableFluidExtensions {
 		return horizontalViscosity;
 	}
 
+	/**
+	 * Whether an Entity can swim when quickly double pressing the space bar inside a fluid.
+	 *
+	 * @param state    - The fluidstate of the fluid the entity wants to swim in.
+	 * @param affected - The entity which is in the fluid.
+	 * @return - A boolean representing whether the entity can double tap sprint swim.
+	 */
 	default boolean enableDoubleTapSpacebarSwimming(FluidState state, Entity affected) {
 		return true;
 	}
 
+	/**
+	 * Whether a fishing bobber floats on top of the fluid or not.
+	 *
+	 * @param state    - The fluidstate of the fluid the bobber wants to float on.
+	 * @param affected - The FishingBobberEntity instance, which wants to float on the fluid.
+	 * @return - A boolean representing whether the bobber can float on the fluid.
+	 */
 	default boolean bobberFloats(FluidState state, FishingBobberEntity affected) {
 		return true;
 	}
 
+	/**
+	 * Whether a fishing bobber can fish in a fluid or not.
+	 *
+	 * @param state    - The fluidstate of the fluid the bobber wants to fish in.
+	 * @param affected - The FishingBobberEntity instance, which wants to fish in the fluid.
+	 * @return - A boolean representing if the bobber can fish in the fluid.
+	 */
 	default boolean canFish(FluidState state, FishingBobberEntity affected) {
 		return true;
 	}
 
+	/**
+	 * Whether the fluid can extinguish burning entities.
+	 *
+	 * @param state    - The fluidstate of the fluid the entity is in.
+	 * @param affected - The entity which is in the fluid.
+	 * @return - A boolean representing whether the entity can be extinguished.
+	 */
 	default boolean canExtinguish(FluidState state, Entity affected) {
 		return true;
 	}
 
+	/**
+	 * Whether the fluid can ignite entities.
+	 *
+	 * @param state    - The fluidstate of the fluid the entity is in.
+	 * @param affected - The entity which is in the fluid.
+	 * @return - A boolean representing whether the entity can be ignited by the fluid.
+	 */
 	default boolean canIgnite(FluidState state, Entity affected) {
 		return !canExtinguish(state, affected);
 	}
@@ -264,8 +304,14 @@ public interface QuiltFlowableFluidExtensions {
 	default Identifier getFishingLootTable() {
 		return WATER_FISHING_LOOT_TABLE;
 	}
-
-	default boolean canBoatSwimOn() {return true;}
+	/**
+	 * Provides a way to determine if a boat can swim on a specific fluid or not.
+	 *
+	 * @return - A boolean representing whether a boat can float on top of this fluid.
+	 */
+	default boolean canBoatSwimOn() {
+		return true;
+	}
 
 	// Overriding of any methods below this comment is generally unnecessary,
 	// and only made available to cover as many cases as possible.

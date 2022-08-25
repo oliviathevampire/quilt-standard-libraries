@@ -38,8 +38,8 @@ public abstract class ArmorMaterialsMixin implements ArmorMaterial {
 	@SuppressWarnings("rawtypes")
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void initTexture(String constantName, int ordinal,
-			String name, int j, int[] is, int k, SoundEvent soundEvent,
-			float f, float g, Supplier supplier, CallbackInfo ci) {
+							 String name, int j, int[] is, int k, SoundEvent soundEvent,
+							 float f, float g, Supplier supplier, CallbackInfo ci) {
 		this.texture = new Identifier("textures/models/armor/" + name);
 	}
 

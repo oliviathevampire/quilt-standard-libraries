@@ -46,8 +46,7 @@ import org.quiltmc.qsl.rendering.entity.impl.client.ArmorRenderingRegistryImpl;
 @SuppressWarnings("rawtypes")
 @Mixin(ArmorFeatureRenderer.class)
 public abstract class ArmorFeatureRendererMixin {
-	@Shadow
-	@Final
+	@Shadow @Final
 	private static Map<String, Identifier> ARMOR_TEXTURE_CACHE;
 
 	@Unique
@@ -89,7 +88,9 @@ public abstract class ArmorFeatureRendererMixin {
 		ItemStack stack = this.capturedEntity.getEquippedStack(this.capturedSlot);
 
 		Identifier texture = ARMOR_TEXTURE_CACHE.computeIfAbsent(
-				armorItem.getMaterial().getTexture() + ArmorTextureUtils.getArmorTextureSuffix(useSecondTexture, suffix),
+				armorItem.getMaterial().getTexture()
+						+ ArmorTextureUtils.getArmorTextureSuffix(useSecondTexture, suffix)
+						+ ".png",
 				Identifier::new);
 		texture = ArmorRenderingRegistryImpl.getArmorTexture(texture, this.capturedEntity, stack, this.capturedSlot,
 				useSecondTexture, suffix);
