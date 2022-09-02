@@ -18,11 +18,12 @@
 package org.quiltmc.qsl.entity.interaction.api.player;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+
 import org.quiltmc.qsl.base.api.event.Event;
 
 /**
@@ -38,9 +39,9 @@ import org.quiltmc.qsl.base.api.event.Event;
 public interface AttackBlockCallback {
 
 	Event<AttackBlockCallback> EVENT = Event.create(AttackBlockCallback.class,
-			callbacks -> (player, world, hand, pos, direction) -> {
+			callbacks -> (player, world, stack, pos, direction) -> {
 				for (AttackBlockCallback callback : callbacks) {
-					ActionResult result = callback.onAttackBlock(player, world, hand, pos, direction);
+					ActionResult result = callback.onAttackBlock(player, world,stack, pos, direction);
 
 					if (result != ActionResult.PASS) return result;
 				}
@@ -52,12 +53,11 @@ public interface AttackBlockCallback {
 	 *
 	 * @param player the player attacking the block
 	 * @param world the world the event is occurring in
-	 * @param hand the hand used
 	 * @param pos the block's position
 	 * @param direction the side of the block hit
 	 * @return {@link ActionResult#SUCCESS} to cancel processing and send a packet to the server,
 	 * {@link ActionResult#PASS} to fall back to further processing,
 	 * {@link ActionResult#FAIL} to cancel further processing
 	 */
-	ActionResult onAttackBlock(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction);
+	ActionResult onAttackBlock(PlayerEntity player, World world, ItemStack stack, BlockPos pos, Direction direction);
 }

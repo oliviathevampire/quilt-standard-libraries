@@ -24,6 +24,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.base.api.event.EventAwareListener;
@@ -32,6 +34,17 @@ public final class ItemInteractionEvents {
 	private ItemInteractionEvents() {
 		throw new UnsupportedOperationException("BlockInteractionEvents only contains static declarations.");
 	}
+
+	public static final Event<Used> USED = Event.create(Used.class, callbacks -> (stack, world, user, hand) -> {
+		var result = TypedActionResult.pass(stack);
+		for (var callback : callbacks) {
+			result = callback.onItemUsed(stack, world, user, hand);
+			if (result.getResult() != ActionResult.PASS) {
+				return result;
+			}
+		}
+		return result;
+	});
 
 	public static final Event<UsedOnBlock> USED_ON_BLOCK = Event.create(UsedOnBlock.class, callbacks -> context -> {
 		var result = ActionResult.PASS;
@@ -44,16 +57,30 @@ public final class ItemInteractionEvents {
 		return result;
 	});
 
-	public static final Event<UsedOnEntity> USED_ON_ENTITY = Event.create(UsedOnEntity.class, callbacks -> (stack, user, entity, hand) -> {
+	public static final Event<UsedOnEntity> USED_ON_ENTITY = Event.create(UsedOnEntity.class, callbacks -> (stack, world, user, entity, hand) -> {
 		var result = ActionResult.PASS;
 		for (var callback : callbacks) {
-			result = callback.onItemUsedOnEntity(stack, user, entity, hand);
+			result = callback.onItemUsedOnEntity(stack, world, user, entity, hand);
 			if (result != ActionResult.PASS) {
 				return result;
 			}
 		}
 		return result;
 	});
+
+	public static final Event<FinishedUsing> FINISHED_USING = Event.create(FinishedUsing.class, callbacks -> (stack, world, user) -> {
+		for (var callback : callbacks) {
+			stack = callback.onFinishedUsing(stack, world, user);
+		}
+		return stack;
+	});
+
+	@FunctionalInterface
+	public interface Used extends EventAwareListener {
+		@NotNull TypedActionResult<ItemStack> onItemUsed(
+				@NotNull ItemStack stack, @NotNull World world, @NotNull PlayerEntity user, @NotNull Hand hand
+		);
+	}
 
 	@FunctionalInterface
 	public interface UsedOnBlock extends EventAwareListener {
@@ -63,7 +90,14 @@ public final class ItemInteractionEvents {
 	@FunctionalInterface
 	public interface UsedOnEntity extends EventAwareListener {
 		@NotNull ActionResult onItemUsedOnEntity(
-				@NotNull ItemStack stack, @NotNull PlayerEntity user, @NotNull LivingEntity entity, @NotNull Hand hand
+				@NotNull ItemStack stack, @NotNull World world, @NotNull PlayerEntity user, @NotNull LivingEntity entity, @NotNull Hand hand
+		);
+	}
+
+	@FunctionalInterface
+	public interface FinishedUsing extends EventAwareListener {
+		@NotNull ItemStack onFinishedUsing(
+				@NotNull ItemStack stack, @NotNull World world, @NotNull LivingEntity user
 		);
 	}
 }

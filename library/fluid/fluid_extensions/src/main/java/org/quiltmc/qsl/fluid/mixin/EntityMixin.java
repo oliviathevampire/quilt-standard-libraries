@@ -16,6 +16,13 @@
 
 package org.quiltmc.qsl.fluid.mixin;
 
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -26,16 +33,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+
 import org.quiltmc.qsl.fluid.api.QuiltFlowableFluidExtensions;
 import org.quiltmc.qsl.fluid.impl.CustomFluidInteracting;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 
 
 @Mixin(Entity.class)
@@ -59,7 +59,6 @@ public abstract class EntityMixin implements CustomFluidInteracting {
 	public abstract boolean equals(Object o);
 
 	@Shadow
-	@Nullable
 	public abstract Entity getVehicle();
 
 	@Shadow

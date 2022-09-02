@@ -25,8 +25,6 @@ import org.quiltmc.qsl.entity.networking.impl.QuiltEntityNetworkingInitializer;
 import org.quiltmc.qsl.registry.api.sync.RegistrySynchronization;
 
 public final class QuiltTrackedDataHandlerRegistry {
-	private static boolean markForSync = true;
-
 	/**
 	 * Registers custom {@linkplain TrackedDataHandler} in a mod compatible way.
 	 *
@@ -37,12 +35,6 @@ public final class QuiltTrackedDataHandlerRegistry {
 	 */
 	@Contract("null, _ -> fail; _, null -> fail; _, _ -> param2")
 	public static <T> TrackedDataHandler<T> register(@NotNull Identifier identifier, @NotNull TrackedDataHandler<T> handler) {
-		Registry.register(QuiltEntityNetworkingInitializer.TRACKED_DATA_HANDLER_REGISTRY, identifier, handler);
-
-		if (markForSync) {
-			RegistrySynchronization.markForSync(QuiltEntityNetworkingInitializer.TRACKED_DATA_HANDLER_REGISTRY);
-			markForSync = false;
-		}
-		return handler;
+		return QuiltEntityNetworkingInitializer.register(identifier, handler);
 	}
 }

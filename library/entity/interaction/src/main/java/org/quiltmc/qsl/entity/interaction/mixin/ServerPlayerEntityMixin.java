@@ -17,29 +17,35 @@
 package org.quiltmc.qsl.entity.interaction.mixin;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.entity.interaction.api.player.AttackEntityCallback;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import org.quiltmc.qsl.entity.interaction.api.player.AttackEntityEvents;
+
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 
 	@Inject(method = "attack", at = @At("HEAD"), cancellable = true)
-	private void onPlayerAttackEntity(Entity target, CallbackInfo ci) {
-		ActionResult result = AttackEntityCallback.EVENT.invoker().onAttack(this, this.world, Hand.MAIN_HAND, target);
+	private void beforePlayerAttackEntity(Entity target, CallbackInfo ci) {
+		ActionResult result = AttackEntityEvents.BEFORE.invoker().beforeAttackEntity(this, this.world, this.getMainHandStack(), target);
 
 		if (result != ActionResult.PASS) ci.cancel();
+	}
+
+	@Inject(method = "attack", at = @At("TAIL"))
+	private void afterPlayerAttackEntity(Entity target, CallbackInfo ci) {
+		AttackEntityEvents.AFTER.invoker().afterAttackEntity(this, this.world, this.getMainHandStack(), target);
 	}
 
 	// Ignore

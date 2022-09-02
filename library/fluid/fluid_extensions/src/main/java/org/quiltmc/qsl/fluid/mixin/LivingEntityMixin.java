@@ -16,7 +16,18 @@
 
 package org.quiltmc.qsl.fluid.mixin;
 
-import net.minecraft.entity.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Flutterer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.Fluid;
@@ -26,15 +37,10 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+
 import org.quiltmc.qsl.fluid.api.FluidEnchantmentHelper;
 import org.quiltmc.qsl.fluid.api.QuiltFlowableFluidExtensions;
 import org.quiltmc.qsl.fluid.impl.CustomFluidInteracting;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements CustomFluidInteracting {
@@ -85,8 +91,8 @@ public abstract class LivingEntityMixin extends Entity implements CustomFluidInt
 				vertVisc = fluid.getVerticalViscosity(fluidState, this);
 
 				FluidEnchantmentHelper helper = fluid.customEnchantmentEffects(movementInput, ((LivingEntity) (Object) this), horizVisc, speed);
-				horizVisc = helper.getHorizontalViscosity();
-				speed = helper.getSpeed();
+				horizVisc = helper.horizontalViscosity();
+				speed = helper.speed();
 
 				horizVisc = fluid.modifyEntityHorizontalViscosity(((LivingEntity) (Object) this), horizVisc);
 			}

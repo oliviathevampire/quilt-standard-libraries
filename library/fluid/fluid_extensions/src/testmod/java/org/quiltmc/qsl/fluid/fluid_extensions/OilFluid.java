@@ -16,8 +16,6 @@
 
 package org.quiltmc.qsl.fluid.fluid_extensions;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -111,7 +109,6 @@ public abstract class OilFluid extends QuiltDirectionalFluid {
 		return horizVisc;
 	}
 
-	@Nullable
 	public ParticleEffect getParticle() {
 		return ParticleTypes.DRIPPING_HONEY;
 	}

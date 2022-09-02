@@ -16,24 +16,26 @@
 
 package org.quiltmc.qsl.entity.interaction.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
+
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
-import org.quiltmc.qsl.entity.interaction.api.LivingEntityAttackCallback;
-import org.quiltmc.qsl.entity.interaction.api.player.AttackEntityCallback;
-import org.quiltmc.qsl.entity.interaction.api.player.PlayerBreakBlockEvents;
-import org.quiltmc.qsl.entity.interaction.api.player.UseEntityCallback;
-import org.quiltmc.qsl.entity.interaction.api.player.UseItemCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.quiltmc.qsl.entity.interaction.api.LivingEntityAttackEvents;
+import org.quiltmc.qsl.entity.interaction.api.player.AttackEntityEvents;
+import org.quiltmc.qsl.entity.interaction.api.player.BreakBlockEvents;
+import org.quiltmc.qsl.entity.interaction.api.player.UseEntityEvents;
+import org.quiltmc.qsl.entity.interaction.api.player.UseItemEvents;
 
 public class InteractionTest implements ModInitializer {
 
@@ -41,20 +43,42 @@ public class InteractionTest implements ModInitializer {
 
 	@Override
 	public void onInitialize(ModContainer mod) {
-		AttackEntityCallback.EVENT.register((player, world, hand, entity) -> {
-			if (player.getStackInHand(hand).isOf(Items.DIAMOND_SWORD)) {
+		AttackEntityEvents.BEFORE.register((player, world, stack, entity) -> {
+			if (stack.isOf(Items.DIAMOND_SWORD)) {
 				return ActionResult.FAIL;
 			}
-			if (player.getStackInHand(hand).isOf(Items.DIAMOND_SHOVEL)) {
+			if (stack.isOf(Items.DIAMOND_SHOVEL)) {
 				return ActionResult.SUCCESS;
 			}
 			return ActionResult.PASS;
 		});
 
-		LivingEntityAttackCallback.EVENT.register((attacker, target, source, amount) ->
-				!(attacker instanceof ZombieEntity));
+		LivingEntityAttackEvents.BEFORE.register(context -> {
+			if (context.getAttacker() instanceof IronGolemEntity) context.cancel();
+		});
 
-		UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+		LivingEntityAttackEvents.BEFORE.register(context -> {
+			if (context.getAttacker() instanceof ZombieEntity) {
+				context.setDamage(context.getDamage() + 3);
+				System.out.println(context.getDamage());
+			}
+		});
+
+		LivingEntityAttackEvents.BEFORE.register(context -> {
+			if (context.getAttacker() instanceof ZombieEntity) {
+				context.setDamage(context.getDamage() + 2);
+				System.out.println(context.getDamage());
+			}
+		});
+
+		LivingEntityAttackEvents.BEFORE.register(context -> {
+			if (context.getAttacker() instanceof ZombieEntity) {
+				context.setDamage(context.getDamage() + 1);
+				System.out.println(context.getDamage());
+			}
+		});
+
+		UseEntityEvents.BEFORE.register((player, world, hand, stack, entity, hitResult) -> {
 			if (entity instanceof CreeperEntity) {
 				if (world instanceof ServerWorld) {
 					System.out.println("creeper " + world);
@@ -64,23 +88,22 @@ public class InteractionTest implements ModInitializer {
 			return ActionResult.PASS;
 		});
 
-		UseItemCallback.EVENT.register((player, world, hand) -> {
+		UseItemEvents.AFTER.register((player, world, hand, stack) -> {
 			if (player.getStackInHand(hand).isOf(Items.DIAMOND_SWORD)) {
 				LightningEntity lightning = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
 				lightning.setPos(player.getX(), player.getY(), player.getZ());
 				world.spawnEntity(lightning);
 			}
-			return new TypedActionResult<>(ActionResult.PASS, player.getStackInHand(hand));
 		});
 
-		PlayerBreakBlockEvents.BEFORE.register((player, world, pos, state, blockEntity) -> {
+		BreakBlockEvents.BEFORE.register((player, world, stack, pos, state, blockEntity) -> {
 			if (state.getBlock() == Blocks.GRASS_BLOCK) {
 				//if (world.isClient) return false;
 			}
 			return true;
 		});
 
-		PlayerBreakBlockEvents.AFTER.register((player, world, pos, state, blockEntity) -> {
+		BreakBlockEvents.AFTER.register((player, world, stack, pos, state, blockEntity) -> {
 			if (state.getBlock() == Blocks.GRASS_BLOCK) {
 				world.setBlockState(pos, Blocks.LAVA.getDefaultState());
 			}
