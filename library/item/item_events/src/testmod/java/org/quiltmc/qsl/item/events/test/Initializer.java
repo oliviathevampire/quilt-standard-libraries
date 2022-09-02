@@ -31,6 +31,7 @@ import org.quiltmc.qsl.item.events.api.ItemInteractionEvents;
 
 public final class Initializer implements ModInitializer,
 		ItemInteractionEvents.UsedOnBlock {
+	public static final Initializer INSTANCE = new Initializer();
 
 	private Initializer() {}
 
