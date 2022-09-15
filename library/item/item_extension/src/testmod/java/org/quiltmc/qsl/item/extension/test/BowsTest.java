@@ -44,11 +44,6 @@ public class BowsTest implements ModInitializer {
 		public void onProjectileShot(ItemStack crossbowStack, ItemStack projectileStack, LivingEntity entity, @NotNull PersistentProjectileEntity persistentProjectileEntity) {
 			persistentProjectileEntity.setDamage(1000);
 		}
-
-		@Override
-		public float getProjectileSpeed(@NotNull ItemStack stack, @NotNull LivingEntity entity) {
-			return 10f;
-		}
 	};
 	public static final String MOD_ID = "quilt_item_extension_testmod";
 

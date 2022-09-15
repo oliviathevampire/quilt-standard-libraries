@@ -16,7 +16,6 @@
 
 package org.quiltmc.qsl.recipe.mixin;
 
-import net.minecraft.nbt.NbtCompound;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,6 +33,7 @@ import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -83,10 +83,9 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
 					   target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;craft(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/collection/DefaultedList;)V"
 			  )
 	)
-	private static void craftBrewingRecipe(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
-		BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) world.getBlockEntity(pos);
+	private static void craftBrewingRecipe(World world, BlockPos pos, DefaultedList<ItemStack> slots, World world1, BlockPos pos1, BlockState state, BrewingStandBlockEntity brewingStand) {
 		BrewingStandBlockEntityMixin recipeHolder = (BrewingStandBlockEntityMixin) (Object) brewingStand;
-		if (recipeHolder.quilt$recipe.matches(brewingStand, world)) {
+		if (recipeHolder.quilt$recipe != null && recipeHolder.quilt$recipe.matches(brewingStand, world)) {
 			recipeHolder.quilt$recipe.craft(brewingStand);
 
 			ItemStack ingredient = slots.get(3);
@@ -114,7 +113,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
 	@Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/block/entity/BrewingStandBlockEntity;fuel:I", opcode = Opcodes.PUTFIELD, ordinal = 1))
 	private static void modifyFuelUse(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity brewingStand, CallbackInfo ci) {
 		var recipeHolder = (BrewingStandBlockEntityMixin) (Object) brewingStand;
-		if (recipeHolder.quilt$recipe.matches(brewingStand, world)) {
+		if (recipeHolder.quilt$recipe != null && recipeHolder.quilt$recipe.matches(brewingStand, world)) {
 			recipeHolder.fuel -= recipeHolder.quilt$recipe.getFuelUse() - 1; // Minus 1 because the base method already subtracts one
 		}
 	}
@@ -130,7 +129,7 @@ public abstract class BrewingStandBlockEntityMixin extends LockableContainerBloc
 	)
 	private static void modifyBrewTime(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity brewingStand, CallbackInfo ci) {
 		var recipeHolder = (BrewingStandBlockEntityMixin) (Object) brewingStand;
-		if (recipeHolder.quilt$recipe.matches(brewingStand, world)) {
+		if (recipeHolder.quilt$recipe != null && recipeHolder.quilt$recipe.matches(brewingStand, world)) {
 			// A brew time of 1 would be the equivalent of a 0 tick recipe
 			recipeHolder.brewTime = Math.max(recipeHolder.quilt$recipe.getBrewTime(), 1);
 		}

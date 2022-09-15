@@ -16,9 +16,9 @@
 
 package org.quiltmc.qsl.recipe.impl;
 
-import net.minecraft.block.entity.BrewingStandBlockEntity;
 import org.jetbrains.annotations.ApiStatus;
 
+import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.tag.TagKey;
@@ -31,6 +31,7 @@ import org.quiltmc.qsl.recipe.api.brewing.AbstractBrewingRecipe;
 import org.quiltmc.qsl.recipe.api.brewing.CustomPotionBrewingRecipe;
 import org.quiltmc.qsl.recipe.api.brewing.PotionBrewingRecipe;
 import org.quiltmc.qsl.recipe.api.brewing.PotionItemBrewingRecipe;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoaderEvents;
 
 @ApiStatus.Internal
 public class RecipeImpl implements ModInitializer {
@@ -45,5 +46,12 @@ public class RecipeImpl implements ModInitializer {
 	public static final TagKey<Item> VALID_INPUTS = TagKey.of(Registry.ITEM_KEY, new Identifier("quilt", "brewing_stand/inputs"));
 
 	@Override
-	public void onInitialize(ModContainer mod) {}
+	public void onInitialize(ModContainer mod) {
+		ResourceLoaderEvents.START_DATA_PACK_RELOAD.register(
+				(server, oldResourceManager) -> {
+					AbstractBrewingRecipe.VALID_INGREDIENTS.clear();
+					PotionBrewingRecipe.BREWABLE_POTIONS.clear();
+				}
+		);
+	}
 }

@@ -20,7 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
 import org.quiltmc.qsl.recipe.api.brewing.PotionItemBrewingRecipe;
-import org.quiltmc.qsl.recipe.impl.BrewingRecipeBuilder;
+import org.quiltmc.qsl.recipe.api.builder.BrewingRecipeBuilder;
 
 /**
  * Builder to build potion recipes

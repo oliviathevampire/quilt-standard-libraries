@@ -50,7 +50,7 @@ public final class GuiRendererHelper {
 	public static void renderQuad(MatrixStack matrices, BufferBuilder buffer,
 								  int x, int y, int width, int height,
 								  int color) {
-		var mat = matrices.peek().getPosition();
+		var mat = matrices.peek().getModel();
 		int r = (color >> 16) & 0xFF;
 		int g = (color >> 8) & 0xFF;
 		int b = color & 0xFF;
@@ -85,7 +85,7 @@ public final class GuiRendererHelper {
 										  int u, int v, int regionWidth, int regionHeight,
 										  int textureWidth, int textureHeight,
 										  int color) {
-		var mat = matrices.peek().getPosition();
+		var mat = matrices.peek().getModel();
 		int r = (color >> 16) & 0xFF;
 		int g = (color >> 8) & 0xFF;
 		int b = color & 0xFF;

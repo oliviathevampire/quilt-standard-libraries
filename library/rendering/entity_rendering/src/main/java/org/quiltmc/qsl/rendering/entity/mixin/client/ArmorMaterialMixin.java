@@ -28,7 +28,8 @@ import org.quiltmc.qsl.rendering.entity.impl.client.FallbackArmorTextureProvider
 @Mixin(ArmorMaterial.class)
 public interface ArmorMaterialMixin extends QuiltArmorMaterialExtensions {
 	@Override
-	default @NotNull Identifier getTexture() {
+	@NotNull
+	default Identifier getTexture() {
 		return FallbackArmorTextureProvider.getArmorTexture((ArmorMaterial) this);
 	}
 }

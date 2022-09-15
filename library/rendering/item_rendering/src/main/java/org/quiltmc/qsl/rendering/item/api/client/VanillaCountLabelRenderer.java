@@ -48,7 +48,7 @@ public class VanillaCountLabelRenderer implements CountLabelRenderer {
 				6 + 3,
 				0xFFFFFF,
 				true,
-				matrices.peek().getPosition(),
+				matrices.peek().getModel(),
 				immediate,
 				false,
 				0x000000,

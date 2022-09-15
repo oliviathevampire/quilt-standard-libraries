@@ -5,7 +5,14 @@
   "mixins": [
     "ItemMixin",
     "ItemStackMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "SimpleInventoryAccessor",
+    "reciperemainder.AbstractFurnaceBlockEntityMixin",
+    "reciperemainder.BrewingStandBlockEntityMixin",
+    "reciperemainder.LoomOutputSlotMixin",
+    "reciperemainder.RecipeManagerMixin",
+    "reciperemainder.SmithingScreenHandlerMixin",
+    "reciperemainder.StonecutterOutputSlotMixin"
   ],
   "client": [
   ],

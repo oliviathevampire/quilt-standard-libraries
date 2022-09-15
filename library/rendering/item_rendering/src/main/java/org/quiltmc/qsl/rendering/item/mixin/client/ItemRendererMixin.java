@@ -16,6 +16,8 @@
 
 package org.quiltmc.qsl.rendering.item.mixin.client;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,7 +33,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 import org.quiltmc.qsl.rendering.item.api.client.ItemBarRenderer;
-import org.quiltmc.qsl.rendering.item.api.client.QuiltItemRendering;
 import org.quiltmc.qsl.rendering.item.impl.client.ItemRendererThreadData;
 import org.quiltmc.qsl.rendering.item.impl.client.QuadBatchManagerImpl;
 
@@ -48,7 +49,7 @@ public abstract class ItemRendererMixin {
 			at = @At("HEAD"), cancellable = true)
 	private void quilt$customizeItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel,
 											CallbackInfo ci) {
-		if (stack.isEmpty()) {
+		/*if (stack.isEmpty()) {
 			return;
 		}
 
@@ -72,7 +73,7 @@ public abstract class ItemRendererMixin {
 			ci.cancel();
 		}
 
-		matrices.pop();
+		matrices.pop();*/
 	}
 
 	@Redirect(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V",
@@ -100,7 +101,14 @@ public abstract class ItemRendererMixin {
 			at = @At("TAIL"))
 	private void quilt$invokePostRenderOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel,
 												CallbackInfo ci) {
-		var threadData = this.quilt$threadData.get();
+
+		Gson GSON = new GsonBuilder()
+				.setPrettyPrinting()
+				.setLenient()
+				.create();
+
+		GSON.to
+		/*var threadData = this.quilt$threadData.get();
 		var matrices = threadData.matrices();
 		var quadBatchManager = threadData.quadBatchManager();
 
@@ -112,7 +120,7 @@ public abstract class ItemRendererMixin {
 		matrices.pop();
 
 		quadBatchManager.endCurrentBatch();
-		quadBatchManager.exit();
+		quadBatchManager.exit();*/
 	}
 
 	@Unique
